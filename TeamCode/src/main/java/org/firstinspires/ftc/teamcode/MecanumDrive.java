@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -16,6 +17,7 @@ public class MecanumDrive extends LinearOpMode {
     private DcMotor carouselDrive;
     private DcMotor slideDrive;
     private DcMotor intakeDrive;
+    private Servo pivotServo;
 
     @Override
     public void runOpMode() {
@@ -29,16 +31,10 @@ public class MecanumDrive extends LinearOpMode {
         carouselDrive = hardwareMap.get(DcMotor.class, "carousel");
         slideDrive = hardwareMap.get(DcMotor.class, "slide");
         intakeDrive = hardwareMap.get(DcMotor.class, "intake");
+        pivotServo = hardwareMap.get(Servo.class, "pivot");
 
-        /*
-        All drives except the left rear drive are somehow hooked up in reverse, so we set their
-        direction to reverse to account for it.
-         */
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftRearDrive.setDirection(DcMotor.Direction.FORWARD);
         rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-        carouselDrive.setDirection(DcMotor.Direction.FORWARD);
 
         waitForStart();
         runtime.reset();
@@ -59,15 +55,20 @@ public class MecanumDrive extends LinearOpMode {
 
             final double carouselPower = ((gamepad2.triangle ? 1.0 : 0.0) - (gamepad2.cross ? 1.0 : 0.0)) * 0.6;
             final double slidePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.4;
-            final double intakePower = gamepad2.left_bumper || gamepad2.right_bumper ? 0.8 : 0.0;
+            final double intakePower = gamepad2.left_bumper || gamepad2.right_bumper ? 1.0 : 0.0;
+
+            final double pivotPosition = gamepad2.square ? 0.8 : 0.325;
 
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
             leftRearDrive.setPower(leftRearPower);
             rightRearDrive.setPower(rightRearPower);
+
             carouselDrive.setPower(carouselPower);
             slideDrive.setPower(slidePower);
             intakeDrive.setPower(intakePower);
+
+            pivotServo.setPosition(pivotPosition);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors",

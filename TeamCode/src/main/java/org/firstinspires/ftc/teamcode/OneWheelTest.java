@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Drivetrain Straight Test OpMode", group="Linear Opmode")
-public class DrivetrainStraightTest extends LinearOpMode {
+@TeleOp(name="One Wheel Test OpMode", group="Linear Opmode")
+public class OneWheelTest extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive;
     private DcMotor rightFrontDrive;
@@ -30,10 +30,7 @@ public class DrivetrainStraightTest extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-            leftFrontDrive.setPower(0.5);
-            rightFrontDrive.setPower(0.5);
             leftRearDrive.setPower(0.5);
-            rightRearDrive.setPower(0.5);
         }
     }
 }
