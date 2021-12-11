@@ -33,7 +33,8 @@ public class BlueSmallParkAuto extends LinearOpMode {
         intakeDrive = hardwareMap.get(DcMotor.class, "intake");
         pivotServo = hardwareMap.get(Servo.class, "pivot");
 
-        TrajectorySequence t1 = drive.trajectorySequenceBuilder(new Pose2d(-35.5, 63, Math.toRadians(90)))
+        Pose2d p1 = new Pose2d(-35.5, 63, Math.toRadians(90));
+        TrajectorySequence t1 = drive.trajectorySequenceBuilder(p1)
                 .strafeTo(new Vector2d(-64, 46))
                 .strafeLeft(4)
                 .forward(10)
@@ -45,11 +46,13 @@ public class BlueSmallParkAuto extends LinearOpMode {
                 )
                 .waitSeconds(3.2)
                 .build();
-        TrajectorySequence t2 = drive.trajectorySequenceBuilder(new Pose2d(-65.15, 53, Math.toRadians(90)))
+        Pose2d p2 = new Pose2d(-65.15, 53, Math.toRadians(90));
+        TrajectorySequence t2 = drive.trajectorySequenceBuilder(p2)
                 .lineToLinearHeading(new Pose2d(-25, 50, 0))
                 .strafeTo(new Vector2d(-25, 69))
                 .build();
-        TrajectorySequence t3 = drive.trajectorySequenceBuilder(new Pose2d(-25, 65.15, 0))
+        Pose2d p3 = new Pose2d(-25, 65.15, 0);
+        TrajectorySequence t3 = drive.trajectorySequenceBuilder(p3)
                 .UNSTABLE_addTemporalMarkerOffset(1, () ->
                         slideDrive.setPower(0.4)
                 )
@@ -68,8 +71,12 @@ public class BlueSmallParkAuto extends LinearOpMode {
 
         waitForStart();
 
+        pivotServo.setPosition(0.03);
+        drive.setPoseEstimate(p1);
         drive.followTrajectorySequence(t1);
+        drive.setPoseEstimate(p2);
         drive.followTrajectorySequence(t2);
+        drive.setPoseEstimate(p3);
         drive.followTrajectorySequence(t3);
     }
 }

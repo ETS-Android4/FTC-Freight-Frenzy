@@ -33,7 +33,8 @@ public class BlueAltAuto extends LinearOpMode {
         intakeDrive = hardwareMap.get(DcMotor.class, "intake");
         pivotServo = hardwareMap.get(Servo.class, "pivot");
 
-        TrajectorySequence t = drive.trajectorySequenceBuilder(new Pose2d(12, 63, Math.toRadians(-90)))
+        Pose2d p = new Pose2d(12, 63, Math.toRadians(-90));
+        TrajectorySequence t = drive.trajectorySequenceBuilder(p)
                 .UNSTABLE_addTemporalMarkerOffset(1, () ->
                     slideDrive.setPower(0.4)
                 )
@@ -52,6 +53,8 @@ public class BlueAltAuto extends LinearOpMode {
 
         waitForStart();
 
+        pivotServo.setPosition(0.03);
+        drive.setPoseEstimate(p);
         drive.followTrajectorySequence(t);
     }
 }
