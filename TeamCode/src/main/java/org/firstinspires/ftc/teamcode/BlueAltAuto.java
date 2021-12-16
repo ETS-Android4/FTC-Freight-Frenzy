@@ -40,20 +40,20 @@ public class BlueAltAuto extends LinearOpMode {
                 )
                 .strafeTo(new Vector2d(5.5, 16.5))
                 .addTemporalMarker(() ->
-                    pivotServo.setPosition(0.8)
+                    pivotServo.setPosition(0.515)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    pivotServo.setPosition(0.35);
+                    pivotServo.setPosition(0.04);
                     slideDrive.setPower(0);
                 })
                 .waitSeconds(2)
                 .lineToLinearHeading(new Pose2d(5.5, 67, 0))
-                .forward(32.5)
+                .forward(35.5)
                 .build();
 
         waitForStart();
 
-        pivotServo.setPosition(0.03);
+        pivotServo.setPosition(0.04);
         drive.setPoseEstimate(p);
         drive.followTrajectorySequence(t);
     }

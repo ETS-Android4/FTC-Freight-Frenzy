@@ -58,20 +58,20 @@ public class BlueFullAuto extends LinearOpMode {
                 )
                 .strafeTo(new Vector2d(-4, 39))
                 .addTemporalMarker(() ->
-                    pivotServo.setPosition(0.8)
+                    pivotServo.setPosition(0.515)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    pivotServo.setPosition(0.35);
+                    pivotServo.setPosition(0.04);
                     slideDrive.setPower(0);
                 })
                 .waitSeconds(2)
                 .strafeTo(new Vector2d(-4, 67))
-                .strafeTo(new Vector2d(38, 67))
+                .strafeTo(new Vector2d(41, 67))
                 .build();
 
         waitForStart();
 
-        pivotServo.setPosition(0.03);
+        pivotServo.setPosition(0.04);
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequence(t1);
         drive.setPoseEstimate(p2);

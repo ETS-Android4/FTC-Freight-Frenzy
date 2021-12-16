@@ -38,7 +38,7 @@ public class RedSmallParkAuto extends LinearOpMode {
                 .strafeTo(new Vector2d(-61, -54))
                 .forward(4)
                 .back(1)
-                .strafeTo(new Vector2d(-66, -58))
+                .strafeLeft(3)
                 .addTemporalMarker(() ->
                         carouselDrive.setPower(-0.6)
                 )
@@ -60,10 +60,10 @@ public class RedSmallParkAuto extends LinearOpMode {
                 )
                 .strafeTo(new Vector2d(-18, -39))
                 .addTemporalMarker(() ->
-                        pivotServo.setPosition(0.8)
+                        pivotServo.setPosition(0.515)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    pivotServo.setPosition(0.35);
+                    pivotServo.setPosition(0.04);
                     slideDrive.setPower(0);
                 })
                 .waitSeconds(2)
@@ -73,7 +73,7 @@ public class RedSmallParkAuto extends LinearOpMode {
 
         waitForStart();
 
-        pivotServo.setPosition(0.03);
+        pivotServo.setPosition(0.04);
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequence(t1);
         drive.setPoseEstimate(p2);

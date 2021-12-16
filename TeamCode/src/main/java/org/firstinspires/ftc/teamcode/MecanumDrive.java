@@ -57,7 +57,8 @@ public class MecanumDrive extends LinearOpMode {
             final double slidePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.4;
             final double intakePower = gamepad2.left_bumper || gamepad2.right_bumper ? 1.0 : 0.0;
 
-            final double pivotPosition = gamepad2.square ? 0.8 : 0.325;
+            final double pivotPosition = gamepad2.square ? 0.515 : 0.04;
+            //difference = 0.8-0.325=0.475
 
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);

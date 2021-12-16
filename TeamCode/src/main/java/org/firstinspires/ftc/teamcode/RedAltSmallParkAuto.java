@@ -40,10 +40,10 @@ public class RedAltSmallParkAuto extends LinearOpMode {
                 )
                 .strafeTo(new Vector2d(5.5, -31.5))
                 .addTemporalMarker(() ->
-                    pivotServo.setPosition(0.8)
+                    pivotServo.setPosition(0.515)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    pivotServo.setPosition(0.35);
+                    pivotServo.setPosition(0.04);
                     slideDrive.setPower(0);
                 })
                 .waitSeconds(2)
@@ -55,7 +55,7 @@ public class RedAltSmallParkAuto extends LinearOpMode {
 
         waitForStart();
 
-        pivotServo.setPosition(0.03);
+        pivotServo.setPosition(0.04);
         drive.setPoseEstimate(p);
         drive.followTrajectorySequence(t);
     }
