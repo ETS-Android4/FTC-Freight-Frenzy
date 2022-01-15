@@ -4,43 +4,36 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
         // TODO: If you experience poor performance, enable this flag
         // System.setProperty("sun.java2d.opengl", "true");
 
-        // Declare a MeepMeep instance
-        // With a field size of 800 pixels
+        // at most 10.5 inch carousel
+        // 2 inches from center of robot to chute
+        // 5.5 inches from center of robot to center of carousel
+        // carousel 5.85 inches from corner
+        // carousel contact 11.32 inches from wall
         MeepMeep mm = new MeepMeep(640)
-                // Set field image
                 .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY)
-                // Set theme
                 .setTheme(new ColorSchemeRedDark())
-                // Background opacity from 0-1
                 .setBackgroundAlpha(1f)
-                // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(20, 20, Math.toRadians(60), Math.toRadians(60), 17.2)
-                .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(12, -63, Math.toRadians(-90)))
-                                .UNSTABLE_addTemporalMarkerOffset(1, () ->
-                                        System.out.println("slide up")
-                                )
-                                .strafeTo(new Vector2d(5.5, -31.5))
-                                .addTemporalMarker(() ->
-                                        System.out.println("pivot on")
-                                )
-                                .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                                    System.out.println("pivot off");
-                                    System.out.println("slide off");
-                                })
-                                .waitSeconds(2)
-                                .strafeTo(new Vector2d(5.5, -6))
-                                .turn(Math.toRadians(90))
-                                .strafeTo(new Vector2d(-59.5, -6))
-                                .strafeTo(new Vector2d(-59.5, -35))
-                                .build()
-                )
+                .setConstraints(45, 30, Math.toRadians(90), Math.toRadians(90), 16.8)
+                .setBotDimensions(12.5, 16.75)
+                .followTrajectorySequence(drive -> {
+                    Pose2d p1 = new Pose2d(12, -62.125, Math.toRadians(90));
+                    TrajectorySequence t1 = drive.trajectorySequenceBuilder(p1)
+                            .lineTo(new Vector2d(9, -26.5))
+                            .waitSeconds(2)
+                            .back(31.5)
+                            .turn(Math.toRadians(-90))
+                            .strafeRight(8)
+                            .lineTo(new Vector2d(40, -66))
+                            .build();
+                    return t1;
+                })
                 .start();
     }
 }

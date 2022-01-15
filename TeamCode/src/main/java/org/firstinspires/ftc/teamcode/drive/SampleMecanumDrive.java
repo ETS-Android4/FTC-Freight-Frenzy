@@ -100,7 +100,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
-        BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
+        BNO055IMUUtil.remapAxes(imu, AxesOrder.YZX, AxesSigns.NNP);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
@@ -126,8 +126,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
@@ -258,7 +256,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         List<Double> wheelPositions = new ArrayList<>();
         for (DcMotorEx motor : motors) {
             double p = encoderTicksToInches(motor.getCurrentPosition());
-            if (wheelPositions.size() == 1 || wheelPositions.size() == 2) {
+            if (wheelPositions.size() == 0 || wheelPositions.size() == 1) {
                 p *= -1.0;
             }
             wheelPositions.add(p);
@@ -271,7 +269,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         List<Double> wheelVelocities = new ArrayList<>();
         for (DcMotorEx motor : motors) {
             double v = encoderTicksToInches(motor.getVelocity());
-            if (wheelVelocities.size() == 1 || wheelVelocities.size() == 2) {
+            if (wheelVelocities.size() == 0 || wheelVelocities.size() == 1) {
                 v *= -1.0;
             }
             wheelVelocities.add(v);

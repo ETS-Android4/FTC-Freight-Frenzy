@@ -33,9 +33,15 @@ public class MecanumDrive extends LinearOpMode {
         intakeDrive = hardwareMap.get(DcMotor.class, "intake");
         pivotServo = hardwareMap.get(Servo.class, "pivot");
 
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-
+        intakeDrive.setDirection(DcMotor.Direction.REVERSE);
+        //LEFT
+        //20->1 (natural position)
+        //23.5->2 (max)
+        //20->3 (max)
+        //RIGHT
+        //15.5->1 (natural position)
+        //20->2 (max)
+        //15.5->3 (max)
         waitForStart();
         runtime.reset();
 
@@ -54,11 +60,10 @@ public class MecanumDrive extends LinearOpMode {
             final double rightRearPower = Range.clip(drive + strafe - turn, -1.0, 1.0);
 
             final double carouselPower = ((gamepad2.triangle ? 1.0 : 0.0) - (gamepad2.cross ? 1.0 : 0.0)) * 0.6;
-            final double slidePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.4;
+            final double slidePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.5;
             final double intakePower = gamepad2.left_bumper || gamepad2.right_bumper ? 1.0 : 0.0;
 
-            final double pivotPosition = gamepad2.square ? 0.515 : 0.04;
-            //difference = 0.8-0.325=0.475
+            final double pivotPosition = 0.52 + (gamepad2.square ? 0.45 : 0.0) + (gamepad2.circle ? -0.45 : 0.0);
 
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);

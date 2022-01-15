@@ -23,9 +23,6 @@ public class DrivetrainStraightTest extends LinearOpMode {
         leftRearDrive = hardwareMap.get(DcMotor.class, "leftRear");
         rightRearDrive = hardwareMap.get(DcMotor.class, "rightRear");
 
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-
         waitForStart();
         runtime.reset();
 
