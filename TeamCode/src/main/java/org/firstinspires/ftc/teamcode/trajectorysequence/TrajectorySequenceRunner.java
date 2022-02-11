@@ -69,6 +69,11 @@ public class TrajectorySequenceRunner {
         dashboard.setTelemetryTransmissionInterval(25);
     }
 
+    public void cancelTrajectorySequence() {
+        remainingMarkers.clear();
+        currentTrajectorySequence = null;
+    }
+
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
         currentTrajectorySequence = trajectorySequence;
         currentSegmentStartTime = clock.seconds();

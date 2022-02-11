@@ -15,9 +15,10 @@ public class MecanumDrive extends LinearOpMode {
     private DcMotor leftRearDrive;
     private DcMotor rightRearDrive;
     private DcMotor carouselDrive;
-    private DcMotor slideDrive;
     private DcMotor intakeDrive;
     private Servo pivotServo;
+
+    private SlidePIDController slideController;
 
     @Override
     public void runOpMode() {
@@ -29,24 +30,18 @@ public class MecanumDrive extends LinearOpMode {
         leftRearDrive = hardwareMap.get(DcMotor.class, "leftRear");
         rightRearDrive = hardwareMap.get(DcMotor.class, "rightRear");
         carouselDrive = hardwareMap.get(DcMotor.class, "carousel");
-        slideDrive = hardwareMap.get(DcMotor.class, "slide");
         intakeDrive = hardwareMap.get(DcMotor.class, "intake");
         pivotServo = hardwareMap.get(Servo.class, "pivot");
 
+        slideController = new SlidePIDController(hardwareMap);
+
         intakeDrive.setDirection(DcMotor.Direction.REVERSE);
-        //LEFT
-        //20->1 (natural position)
-        //23.5->2 (max)
-        //20->3 (max)
-        //RIGHT
-        //15.5->1 (natural position)
-        //20->2 (max)
-        //15.5->3 (max)
+
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
-            final double drive = -gamepad1.left_stick_y;
+            final double drive = -gamepad1.left_stick_y * 0.8;
             final double strafe = gamepad1.left_stick_x;
             final double turn = gamepad1.right_stick_x;
 
@@ -55,15 +50,24 @@ public class MecanumDrive extends LinearOpMode {
             https://docs.revrobotics.com/15mm/ftc-starter-kit-mecanum-drivetrain/mecanum-wheel-setup-and-behavior
              */
             final double leftFrontPower = Range.clip(drive + strafe + turn, -1.0, 1.0);
-            final double rightFrontPower = Range.clip(drive - strafe -  turn, -1.0, 1.0);
+            final double rightFrontPower = Range.clip(drive - strafe - turn, -1.0, 1.0);
             final double leftRearPower = Range.clip(drive - strafe + turn, -1.0, 1.0);
             final double rightRearPower = Range.clip(drive + strafe - turn, -1.0, 1.0);
 
             final double carouselPower = ((gamepad2.triangle ? 1.0 : 0.0) - (gamepad2.cross ? 1.0 : 0.0)) * 0.6;
-            final double slidePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.5;
-            final double intakePower = gamepad2.left_bumper || gamepad2.right_bumper ? 1.0 : 0.0;
+            final double intakePower = (gamepad2.right_bumper ? 1.0 : 0.0) - (gamepad2.left_bumper ? 1.0 : 0.0);
 
-            final double pivotPosition = 0.52 + (gamepad2.square ? 0.45 : 0.0) + (gamepad2.circle ? -0.45 : 0.0);
+            final double pivotPosition = 0.51 + (gamepad2.square ? 0.46 : 0.0) + (gamepad2.circle ? -0.46 : 0.0);
+
+            if (gamepad2.dpad_down) {
+                slideController.setTarget(0.02);
+            } else if (gamepad2.dpad_left) {
+                slideController.setTarget(2.75);
+            } else if (gamepad2.dpad_up) {
+                slideController.setTarget(3.75);
+            } else if (gamepad2.dpad_right) {
+                slideController.setTarget(4.7);
+            }
 
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
@@ -71,15 +75,15 @@ public class MecanumDrive extends LinearOpMode {
             rightRearDrive.setPower(rightRearPower);
 
             carouselDrive.setPower(carouselPower);
-            slideDrive.setPower(slidePower);
             intakeDrive.setPower(intakePower);
+
+            final double slidePower = slideController.update();
 
             pivotServo.setPosition(pivotPosition);
 
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors",
-                    "leftFront (%.2f), rightFront (%.2f), leftRear (%.2f), rightRear (%.2f), carousel (%.2f), slide (%.2f), intake (%.2f)",
-                    leftFrontPower, rightFrontPower, leftRearPower, rightRearPower, carouselPower, slidePower, intakePower);
+            telemetry.addData("Status", "Run Time: " + runtime);
+            telemetry.addData("Lift position: (%.2f)", slideController.getSlidePosition());
+            telemetry.addData("Lift power: (%.2f)", slidePower);
             telemetry.update();
         }
     }

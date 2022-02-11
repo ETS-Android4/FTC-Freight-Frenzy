@@ -129,10 +129,44 @@ public class RedAltSmallParkAuto extends LinearOpMode {
                 .lineTo(new Vector2d(-60, -34.5))
                 .build();
 
+        Pose2d p3 = new Pose2d(40, -64.25, Math.toRadians(0));
+        TrajectorySequence t3 = drive.trajectorySequenceBuilder(p3)
+                .addTemporalMarker(() -> {
+                    slideDrive.setPower(-0.4);
+                    intakeDrive.setPower(1.0);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.5, () ->
+                        slideDrive.setPower(0)
+                )
+                .lineTo(new Vector2d(52, -64.25))
+                .addTemporalMarker(() -> {
+                    intakeDrive.setPower(0);
+                    slideDrive.setPower(0.5);
+                })
+                .lineTo(new Vector2d(22, -64.25))
+                .splineTo(new Vector2d(-13, -44.5), Math.toRadians(180))
+                .addTemporalMarker(() ->
+                        pivotServo.setPosition(0.97)
+                )
+                .UNSTABLE_addTemporalMarkerOffset(1, () ->
+                        pivotServo.setPosition(0.52)
+                )
+                .UNSTABLE_addTemporalMarkerOffset(1.3, () ->
+                        slideDrive.setPower(-0.4)
+                )
+                .UNSTABLE_addTemporalMarkerOffset(1.5, () ->
+                        slideDrive.setPower(0)
+                )
+                .waitSeconds(1)
+                .lineTo(new Vector2d(-60, -40))
+                .build();
+
         pivotServo.setPosition(0.52);
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequence(t1);
         drive.setPoseEstimate(p2);
         drive.followTrajectorySequence(t2);
+        drive.setPoseEstimate(p3);
+        drive.followTrajectorySequence(t3);
     }
 }
