@@ -7,11 +7,10 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstra
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDriveCancellable;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import org.firstinspires.ftc.teamcode.BarcodeDeterminer.BarcodeDeterminationPipeline;
@@ -21,9 +20,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-/*
- * This is our blue-side autonomous routine.
- */
 @Config
 @Autonomous(group = "drive")
 public class BlueFullAuto extends LinearOpMode {
@@ -35,22 +31,23 @@ public class BlueFullAuto extends LinearOpMode {
     private OpenCvInternalCamera phoneCam;
     private BarcodeDeterminationPipeline pipeline;
 
-    private DistanceSensor chuteProximitySensor;
-
-    enum State {
-        TRAJECTORY_1,
-        TRAJECTORY_2,
+    private enum State {
+        PRELOAD,
+        CAROUSEL,
+        CARGO,
         IDLE
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancellable drive = new SampleMecanumDriveCancellable(hardwareMap);
 
         carouselDrive = hardwareMap.get(DcMotor.class, "carousel");
         intakeDrive = hardwareMap.get(DcMotor.class, "intake");
         pivotServo = hardwareMap.get(Servo.class, "pivot");
         intakeDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        slideController = new SlidePIDController(hardwareMap);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
@@ -66,73 +63,30 @@ public class BlueFullAuto extends LinearOpMode {
             }
 
             @Override
-            public void onError(int errorCode) {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
+            public void onError(int errorCode) {}
         });
 
-        slideController = new SlidePIDController(hardwareMap);
-
-        chuteProximitySensor = hardwareMap.get(DistanceSensor.class, "chuteSensor");
-
-        waitForStart();
-
-        BarcodePosition result = pipeline.getAnalysis();
-
-        telemetry.addData("Analysis", result);
-        telemetry.update();
-
-        phoneCam.stopStreaming();
-        phoneCam.closeCameraDevice();
-
         Pose2d p1 = new Pose2d(-35.5, 62.125, Math.toRadians(-90));
-        TrajectorySequence t1;
-        Pose2d p2;
-        if (result == BarcodePosition.LEFT) {
-            t1 = drive.trajectorySequenceBuilder(p1)
-                    .addTemporalMarker(() ->
-                            slideController.setTarget(5)
-                    )
-                    .splineToLinearHeading(new Pose2d(-60, 27.5, Math.toRadians(90)), Math.toRadians(-90))
-                    .lineTo(new Vector2d(-31, 24.5))
-                    .build();
-            p2 = new Pose2d(-31, 24.5, Math.toRadians(90));
-        } else if (result == BarcodePosition.CENTER) {
-            t1 = drive.trajectorySequenceBuilder(p1)
-                    .addTemporalMarker(() ->
-                            slideController.setTarget(10)
-                    )
-                    .splineToLinearHeading(new Pose2d(-60, 27.5, Math.toRadians(90)), Math.toRadians(-90))
-                    .lineTo(new Vector2d(-34.5, 24.5))
-                    .build();
-            p2 = new Pose2d(-34.5, 24.5, Math.toRadians(90));
-        } else {
-            t1 = drive.trajectorySequenceBuilder(p1)
-                    .addTemporalMarker(() ->
-                            slideController.setTarget(15)
-                    )
-                    .splineToLinearHeading(new Pose2d(-60, 27.5, Math.toRadians(90)), Math.toRadians(-90))
-                    .lineTo(new Vector2d(-34.5, 24.5))
-                    .build();
-            p2 = new Pose2d(-34.5, 24.5, Math.toRadians(90));
-        }
-
-        TrajectorySequence t2 = drive.trajectorySequenceBuilder(p2)
+        TrajectorySequence t1 = drive.trajectorySequenceBuilder(p1)
+                .lineTo(new Vector2d(-30, 24.5))
                 .addTemporalMarker(() ->
                         pivotServo.setPosition(0.97)
                 )
-                .UNSTABLE_addTemporalMarkerOffset(2, () ->
-                        pivotServo.setPosition(0.52)
+                .UNSTABLE_addTemporalMarkerOffset(1.4, () ->
+                        pivotServo.setPosition(0.51)
                 )
-                .UNSTABLE_addTemporalMarkerOffset(2.5, () ->
-                        slideController.setTarget(0.03)
+                .UNSTABLE_addTemporalMarkerOffset(1.7, () ->
+                        slideController.setTarget(0.1)
                 )
-                .waitSeconds(2)
-                .lineTo(new Vector2d(-66, 24.5)) // contact at -64.25
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(-66, 24.5, Math.toRadians(90))) // contact at -64.25
+                //.strafeLeft(4) // just to be safe
+                .build();
+
+        Pose2d p2 = new Pose2d(-64.25, 24.5, Math.toRadians(90));
+        TrajectorySequence t2 = drive.trajectorySequenceBuilder(p2)
                 .setVelConstraint(new MecanumVelocityConstraint(20, DriveConstants.TRACK_WIDTH))
-                .lineTo(new Vector2d(-66, 56)) // contact at 53.675?
+                .lineTo(new Vector2d(-64.25, 56)) // contact at 53.675?
                 .resetVelConstraint()
                 .addTemporalMarker(() ->
                         carouselDrive.setPower(0.6)
@@ -146,22 +100,78 @@ public class BlueFullAuto extends LinearOpMode {
                 .lineTo(new Vector2d(40, 68))
                 .build();
 
+        Pose2d p3 = new Pose2d(40, 64.25, Math.toRadians(0));
+        TrajectorySequence t3 = drive.trajectorySequenceBuilder(p3)
+                .addTemporalMarker(() ->
+                        intakeDrive.setPower(1.0)
+                )
+                .lineTo(new Vector2d(62, 64.25))
+                .addTemporalMarker(() -> {
+                    intakeDrive.setPower(-1.0);
+                    slideController.setTarget(0.1);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(1, () ->
+                        intakeDrive.setPower(0)
+                )
+                .lineTo(new Vector2d(22, 64.25))
+                .addTemporalMarker(() ->
+                        slideController.setTarget(4.5)
+                )
+                .splineTo(new Vector2d(-13, 43), Math.toRadians(180))
+                .addTemporalMarker(() ->
+                        pivotServo.setPosition(0.05)
+                )
+                .UNSTABLE_addTemporalMarkerOffset(1.4, () ->
+                        pivotServo.setPosition(0.51)
+                )
+                .UNSTABLE_addTemporalMarkerOffset(1.5, () ->
+                        slideController.setTarget(0.1)
+                )
+                .waitSeconds(1.5)
+                .splineTo(new Vector2d(22, 64.25), Math.toRadians(0))
+                .lineTo(new Vector2d(40, 64.25))
+                .build();
+
+        waitForStart();
+
+        BarcodePosition result = pipeline.getAnalysis();
+
+        telemetry.addData("Analysis", result);
+        telemetry.update();
+
+        phoneCam.stopStreaming();
+        phoneCam.closeCameraDevice();
+
         pivotServo.setPosition(0.51);
 
-        State currentState = State.TRAJECTORY_1;
+        State currentState = State.PRELOAD;
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequenceAsync(t1);
+        if (result == BarcodePosition.LEFT) {
+            slideController.setTarget(1);
+        } else if (result == BarcodePosition.CENTER) {
+            slideController.setTarget(2.5);
+        } else if (result == BarcodePosition.RIGHT) {
+            slideController.setTarget(4);
+        }
 
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
-                case TRAJECTORY_1:
+                case PRELOAD:
                     if (!drive.isBusy()) {
-                        currentState = State.TRAJECTORY_2;
+                        currentState = State.CAROUSEL;
                         drive.setPoseEstimate(p2);
                         drive.followTrajectorySequenceAsync(t2);
                     }
                     break;
-                case TRAJECTORY_2:
+                case CAROUSEL:
+                    if (!drive.isBusy()) {
+                        currentState = State.CARGO;
+                        drive.setPoseEstimate(p3);
+                        drive.followTrajectorySequenceAsync(t3);
+                    }
+                    break;
+                case CARGO:
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
                     }

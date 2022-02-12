@@ -5,31 +5,43 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class SlidePIDController {
-    private DcMotor slideMotor;
-    private final double kP = 0.6;
-    private final double kI = 0.02;
+    private final DcMotor slideMotor;
+    private final double kP = 0.55;
+    private final double kI = 0;
     private final double kD = 0;
-    private final double kStatic = 0;
-    private double lastError;
-    private double integralSum;
-    private double target;
-    private ElapsedTime timer;
+    private final double kStatic = 0.1;
+    private double target = 0;
+    private double lastError = 0;
+    private double integralSum = 0;
+    private double forcedPower = 0;
+    private boolean beingForced = false;
+    private final ElapsedTime timer;
 
     public SlidePIDController(HardwareMap hardwareMap) {
         slideMotor = hardwareMap.get(DcMotor.class, "slide");
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        lastError = 0.0;
-        integralSum = 0.0;
-        target = 0.0;
         timer = new ElapsedTime();
+    }
+
+    public void resetEncoder() {
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void setTarget(double targetLevel) {
         target = targetLevel;
+        lastError = 0;
+        integralSum = 0;
+        beingForced = false;
         timer.reset();
+    }
+
+    public void setPower(double power) {
+        forcedPower = power;
+        beingForced = true;
     }
 
     public double getSlidePosition() {
@@ -37,6 +49,11 @@ public class SlidePIDController {
     }
 
     public double update() {
+        if (beingForced) {
+            slideMotor.setPower(forcedPower);
+            return forcedPower;
+        }
+
         final double state = getSlidePosition();
 
         double error = target - state;
