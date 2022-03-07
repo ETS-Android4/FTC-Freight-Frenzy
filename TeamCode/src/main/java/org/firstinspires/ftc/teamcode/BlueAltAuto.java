@@ -98,7 +98,7 @@ public class BlueAltAuto extends LinearOpMode {
                 .addTemporalMarker(() ->
                         slideController.setTarget(6)
                 )
-                .splineTo(new Vector2d(-13, 43), Math.toRadians(180))
+                .splineTo(new Vector2d(-10, 42), Math.toRadians(180))
                 .addTemporalMarker(() ->
                         pivotServo.setPosition(0.05)
                 )
@@ -106,7 +106,7 @@ public class BlueAltAuto extends LinearOpMode {
                         pivotServo.setPosition(0.51)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(1.5, () ->
-                        slideController.setTarget(0.1)
+                        slideController.setTarget(0.06)
                 )
                 .waitSeconds(1.5)
                 .splineTo(new Vector2d(22, 64.25), Math.toRadians(0))
@@ -129,11 +129,11 @@ public class BlueAltAuto extends LinearOpMode {
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequenceAsync(t1);
         if (result == BarcodePosition.LEFT) {
-            slideController.setTarget(2);
+            slideController.setTarget(2.5);
         } else if (result == BarcodePosition.CENTER) {
-            slideController.setTarget(4);
+            slideController.setTarget(4.25);
         } else if (result == BarcodePosition.RIGHT) {
-            slideController.setTarget(6);
+            slideController.setTarget(5.6);
         }
 
         while (opModeIsActive() && !isStopRequested()) {

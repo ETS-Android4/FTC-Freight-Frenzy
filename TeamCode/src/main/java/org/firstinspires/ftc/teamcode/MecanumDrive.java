@@ -54,7 +54,7 @@ public class MecanumDrive extends LinearOpMode {
             final double leftRearPower = Range.clip(drive - strafe + turn, -1.0, 1.0);
             final double rightRearPower = Range.clip(drive + strafe - turn, -1.0, 1.0);
 
-            final double carouselPower = ((gamepad2.triangle ? 1.0 : 0.0) - (gamepad2.cross ? 1.0 : 0.0)) * 0.6;
+            final double carouselPower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.7;
             final double intakePower = (gamepad2.right_bumper ? 1.0 : 0.0) - (gamepad2.left_bumper ? 1.0 : 0.0);
 
             final double pivotPosition = 0.51 + (gamepad2.square ? 0.46 : 0.0) + (gamepad2.circle ? -0.46 : 0.0);

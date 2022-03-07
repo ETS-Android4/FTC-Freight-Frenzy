@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class SlidePIDController {
     private final DcMotor slideMotor;
     private final double kP = 0.55;
-    private final double kI = 0;
+    private final double kI = 0.03;
     private final double kD = 0;
-    private final double kStatic = 0.1;
+    private final double kStatic = 0.15;
     private double target = 0;
     private double lastError = 0;
     private double integralSum = 0;
