@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="Mecanum Linear OpMode", group="Linear Opmode")
-public class MecanumDrive extends LinearOpMode {
+@TeleOp(name="Red Mecanum OpMode", group="Linear Opmode")
+public class RedMecanumDrive extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive;
     private DcMotor rightFrontDrive;

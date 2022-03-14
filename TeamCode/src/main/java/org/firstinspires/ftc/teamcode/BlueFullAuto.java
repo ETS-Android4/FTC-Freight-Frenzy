@@ -105,7 +105,7 @@ public class BlueFullAuto extends LinearOpMode {
                 .addTemporalMarker(() ->
                         intakeDrive.setPower(1.0)
                 )
-                .lineTo(new Vector2d(62, 64.25))
+                .lineTo(new Vector2d(66, 64.25))
                 .addTemporalMarker(() -> {
                     intakeDrive.setPower(-1.0);
                     slideController.setTarget(0.1);
@@ -115,9 +115,9 @@ public class BlueFullAuto extends LinearOpMode {
                 )
                 .lineTo(new Vector2d(22, 64.25))
                 .addTemporalMarker(() ->
-                        slideController.setTarget(4.5)
+                        slideController.setTarget(5.5)
                 )
-                .splineTo(new Vector2d(-13, 43), Math.toRadians(180))
+                .splineTo(new Vector2d(-7, 41), Math.toRadians(180))
                 .addTemporalMarker(() ->
                         pivotServo.setPosition(0.05)
                 )
@@ -148,11 +148,11 @@ public class BlueFullAuto extends LinearOpMode {
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequenceAsync(t1);
         if (result == BarcodePosition.LEFT) {
-            slideController.setTarget(2.5);
+            slideController.setTarget(1.25);
         } else if (result == BarcodePosition.CENTER) {
-            slideController.setTarget(4.25);
+            slideController.setTarget(3);
         } else if (result == BarcodePosition.RIGHT) {
-            slideController.setTarget(5.6);
+            slideController.setTarget(4.75);
         }
 
         while (opModeIsActive() && !isStopRequested()) {

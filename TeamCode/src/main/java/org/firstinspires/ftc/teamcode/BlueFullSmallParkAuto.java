@@ -112,11 +112,11 @@ public class BlueFullSmallParkAuto extends LinearOpMode {
         drive.setPoseEstimate(p1);
         drive.followTrajectorySequenceAsync(t1);
         if (result == BarcodePosition.LEFT) {
-            slideController.setTarget(2.5);
+            slideController.setTarget(1.25);
         } else if (result == BarcodePosition.CENTER) {
-            slideController.setTarget(4.25);
+            slideController.setTarget(3);
         } else if (result == BarcodePosition.RIGHT) {
-            slideController.setTarget(5.6);
+            slideController.setTarget(4.75);
         }
 
         while (opModeIsActive() && !isStopRequested()) {

@@ -65,7 +65,7 @@ public class BlueAltAuto extends LinearOpMode {
 
         Pose2d p1 = new Pose2d(12, 62.125, Math.toRadians(-90));
         TrajectorySequence t1 = drive.trajectorySequenceBuilder(p1)
-                .lineTo(new Vector2d(3, 24.5))
+                .lineTo(new Vector2d(2, 24.5))
                 .addTemporalMarker(() ->
                         pivotServo.setPosition(0.05)
                 )
@@ -86,7 +86,7 @@ public class BlueAltAuto extends LinearOpMode {
                 .addTemporalMarker(() ->
                         intakeDrive.setPower(1.0)
                 )
-                .lineTo(new Vector2d(62, 64.25))
+                .lineTo(new Vector2d(66, 64.25))
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intakeDrive.setPower(-1.0);
                     slideController.setTarget(0.1);
@@ -96,9 +96,9 @@ public class BlueAltAuto extends LinearOpMode {
                 )
                 .lineTo(new Vector2d(22, 64.25))
                 .addTemporalMarker(() ->
-                        slideController.setTarget(6)
+                        slideController.setTarget(5.5)
                 )
-                .splineTo(new Vector2d(-10, 42), Math.toRadians(180))
+                .splineTo(new Vector2d(-7, 41), Math.toRadians(180))
                 .addTemporalMarker(() ->
                         pivotServo.setPosition(0.05)
                 )

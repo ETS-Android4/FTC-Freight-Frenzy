@@ -86,7 +86,7 @@ public class RedAltAuto extends LinearOpMode {
                 .addTemporalMarker(() ->
                         intakeDrive.setPower(1.0)
                 )
-                .lineTo(new Vector2d(62, -64.25))
+                .lineTo(new Vector2d(66, -64.25))
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intakeDrive.setPower(-1.0);
                     slideController.setTarget(0.1);
@@ -98,7 +98,7 @@ public class RedAltAuto extends LinearOpMode {
                 .addTemporalMarker(() ->
                         slideController.setTarget(5)
                 )
-                .splineTo(new Vector2d(-9, -42.5), Math.toRadians(180))
+                .splineTo(new Vector2d(-6, -42.5), Math.toRadians(180))
                 .addTemporalMarker(() ->
                         pivotServo.setPosition(0.97)
                 )
